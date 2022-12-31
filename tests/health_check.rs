@@ -1,4 +1,7 @@
 use std::net::TcpListener;
+use sqlx::PgConnection;
+use sqlx::Connection;
+use zero2prod::configuration::get_configuration;
 
 #[tokio::test]
 async fn subscribe_returns_400_when_data_is_missing() {
@@ -21,6 +24,12 @@ async fn subscribe_returns_400_when_data_is_missing() {
 #[tokio::test]
 async fn subscribe_returns_200() {
     let address = spawn_app();
+    let configuration = get_configuration().expect("Failed to read configuration.");
+    let connection_string = configuration.database.connection_string();
+    let connection = PgConnection::connect(&connection_string)
+        .await
+        .expect("Failed to connect to Postgres.");
+    let client = reqwest::Client::new();
     let client = reqwest::Client::new();
     let body = "name=le%20guine&email=ursula_le_guin%40gmail.com";
     let response = client
