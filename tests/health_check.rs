@@ -1,15 +1,10 @@
 use std::net::TcpListener;
 
-
 #[tokio::test]
 async fn subscribe_returns_400_when_data_is_missing() {
     let address = spawn_app();
     let client = reqwest::Client::new();
-    let test_cases = vec![
-        "name=le%20guine",
-        "email=ursula_le_guin%40gmail.com",
-        "",
-    ];
+    let test_cases = vec!["name=le%20guine", "email=ursula_le_guin%40gmail.com", ""];
 
     for test_case in test_cases {
         let response = client
@@ -20,10 +15,7 @@ async fn subscribe_returns_400_when_data_is_missing() {
             .await
             .expect("Failed to execute request.");
         assert!(response.status().is_client_error());
-
     }
-
-
 }
 
 #[tokio::test]
@@ -40,7 +32,6 @@ async fn subscribe_returns_200() {
         .expect("Failed to execute request.");
     assert!(response.status().is_success());
     assert_eq!(Some(0), response.content_length());
-
 }
 #[tokio::test]
 async fn health_check_test() {
